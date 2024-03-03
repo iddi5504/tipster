@@ -1,11 +1,16 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:tipster/core/constants.dart';
 import 'package:tipster/core/dependency-injection.dart';
 import 'package:tipster/core/input_styles.dart';
+import 'package:tipster/core/methods.dart';
+import 'package:tipster/features/auth/cubit/auth_cubit.dart';
 import 'package:tipster/features/home/index.dart';
+import 'package:tipster/models/user_models.dart';
 import 'package:tipster/routes/app_router.gr.dart';
 
 @RoutePage()
@@ -20,16 +25,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   FirebaseAuth firebaseAuth = getIt<FirebaseAuth>();
+  FirebaseFirestore firebaseStore = getIt<FirebaseFirestore>();
   bool signingUp = false;
   String email = '';
   String password = '';
   String username = '';
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,12 +38,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         height: double.infinity,
         width: double.infinity,
         color: Colors.black87,
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Welcome to Tipster',
               style: TextStyle(
                   color: Colors.amberAccent,
@@ -58,7 +58,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     TextFormField(
                       decoration: CustomInputDecoration(hintText: 'Username'),
                       validator: ValidationBuilder().required().build(),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       onChanged: (value) => {
                         username = value,
                       },
@@ -67,7 +67,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     TextFormField(
                       decoration: CustomInputDecoration(hintText: 'Email'),
                       validator: ValidationBuilder().email().build(),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       onChanged: (value) => {
                         email = value,
                       },
@@ -77,7 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         decoration: CustomInputDecoration(hintText: 'Password'),
                         validator:
                             ValidationBuilder().required().minLength(5).build(),
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                         obscureText: true,
                         onChanged: (value) => {
                               password = value,
@@ -89,13 +89,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: const CircularProgressIndicator.adaptive(),
+                              child: CircularProgressIndicator.adaptive(),
                             )
                           : const Icon(Icons.arrow_forward),
-                      label: Text('Sign Up'),
+                      label: const Text('Sign Up'),
                       style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
                       ),
                     ),
                     hSpace4,
@@ -122,21 +122,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
     formKey.currentState!.save();
     bool isValid = formKey.currentState!.validate();
     if (isValid) {
-      try {
-        setState(() {
-          signingUp = true;
-        });
-        await firebaseAuth.createUserWithEmailAndPassword(
-            email: email, password: password);
-        if (context.mounted) {
-          context.pushRoute(const HomeRoute());
-        }
-      } catch (e) {
-      } finally {
-        setState(() {
-          signingUp = false;
-        });
-      }
+      setState(() {
+        signingUp = true;
+      });
+      await context.read<AuthCubit>().createUser(
+          UserModel(userName: username, email: email), password, () {
+        context.router.popAndPush(const HomeRoute());
+      }, (error) {
+        showSnackBar(context, error);
+      });
+
+      setState(() {
+        signingUp = false;
+      });
     }
   }
 }

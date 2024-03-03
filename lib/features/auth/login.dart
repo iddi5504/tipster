@@ -6,7 +6,6 @@ import 'package:tipster/core/constants.dart';
 import 'package:tipster/core/dependency-injection.dart';
 import 'package:tipster/core/input_styles.dart';
 import 'package:tipster/core/methods.dart';
-import 'package:tipster/features/home/index.dart';
 import 'package:tipster/routes/app_router.gr.dart';
 
 @RoutePage()
