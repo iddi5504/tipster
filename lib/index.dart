@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tipster/core/dependency-injection.dart';
 import 'package:tipster/features/auth/cubit/auth_cubit.dart';
 import 'package:tipster/features/auth/login.dart';
 import 'package:tipster/features/home/index.dart';
@@ -35,7 +34,7 @@ class _AppState extends State<App> {
       child: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
           if (state.authStatus == AuthStatus.authenticated) {
-            return const HomeScreen();
+            return const TabsScreen();
           } else if (state.authStatus == AuthStatus.unauthenticated) {
             return const LoginScreen();
           } else {

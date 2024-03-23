@@ -6,6 +6,7 @@ import 'package:tipster/core/constants.dart';
 import 'package:tipster/core/dependency-injection.dart';
 import 'package:tipster/core/input_styles.dart';
 import 'package:tipster/core/methods.dart';
+import 'package:tipster/features/auth/cubit/auth_cubit.dart';
 import 'package:tipster/routes/app_router.gr.dart';
 
 @RoutePage()
@@ -26,19 +27,13 @@ class _LoginScreenState extends State<LoginScreen> {
   String username = '';
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         height: double.infinity,
         width: double.infinity,
         color: Colors.black87,
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -68,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: CustomInputDecoration(hintText: 'Password'),
                         validator:
                             ValidationBuilder().required().minLength(5).build(),
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                         obscureText: true,
                         onChanged: (value) => {
                               password = value,
@@ -80,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: const CircularProgressIndicator.adaptive(),
+                              child: CircularProgressIndicator.adaptive(),
                             )
                           : const Icon(Icons.arrow_forward),
                       label: const Text('Login'),
@@ -92,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     hSpace4,
                     TextButton(
                         onPressed: () {
-                          context.pushRoute(const SignUpRoute());
+                          context.router.push(const SignUpRoute());
                         },
                         child: const Text(
                           'Create an account',
@@ -119,7 +114,8 @@ class _LoginScreenState extends State<LoginScreen> {
         });
         await firebaseAuth.signInWithEmailAndPassword(
             email: email, password: password);
-        context.pushRoute(const HomeRoute());
+
+        await getIt<AuthCubit>().getUser();
       } catch (e) {
         showSnackBar(
             context, (e as FirebaseAuthException).message.toString() ?? '');

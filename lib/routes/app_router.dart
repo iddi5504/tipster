@@ -9,15 +9,20 @@ class AppRouter extends $AppRouter {
           page: App.page,
           initial: true,
         ),
-        AutoRoute(page: HomeRoute.page),
+        AutoRoute(page: TabsRoute.page, children: [
+          AutoRoute(
+            page: ProfileRoute.page,
+          ),
+          AutoRoute(page: MatchesRoute.page),
+          AutoRoute(
+            page: HomeRoute.page,
+          ),
+        ]),
         AutoRoute(
           page: LoginRoute.page,
         ),
         AutoRoute(
           page: SignUpRoute.page,
-        ),
-        AutoRoute(
-          page: ProfileRoute.page,
         ),
       ];
 }

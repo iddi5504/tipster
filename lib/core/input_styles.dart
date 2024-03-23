@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
 class CustomInputDecoration extends InputDecoration {
+  @override
   final String? hintText;
+  @override
   final Icon? icon;
+  @override
   final Icon? prefixIcon;
+  @override
   final Icon? suffixIcon;
 
   CustomInputDecoration(

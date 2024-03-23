@@ -19,20 +19,20 @@ SizedBox hSpace6 = const SizedBox(
   height: 20,
 );
 SizedBox wSpace1 = const SizedBox(
-  height: 4,
+  width: 4,
 );
 SizedBox wSpace2 = const SizedBox(
-  height: 8,
+  width: 8,
 );
 SizedBox wSpace3 = const SizedBox(
-  height: 12,
+  width: 12,
 );
 SizedBox wSpace4 = const SizedBox(
-  height: 16,
+  width: 16,
 );
 SizedBox wSpace5 = const SizedBox(
-  height: 20,
+  width: 20,
 );
 SizedBox wSpace6 = const SizedBox(
-  height: 20,
+  width: 20,
 );

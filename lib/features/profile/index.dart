@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -54,28 +55,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
             slivers: [
               SliverAppBar(
                 floating: true,
-                backgroundColor: Colors.amber,
-                toolbarHeight: 70,
+                backgroundColor: Colors.amberAccent,
+                toolbarHeight: 85,
+                forceMaterialTransparency: false,
                 pinned: true,
-                bottom: const PreferredSize(
-                  preferredSize: Size.fromHeight(50),
-                  child: Text('testing'),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(90),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        CircleAvatar(
+                          radius: 35,
+                          backgroundImage: CachedNetworkImageProvider(App.name,
+                              cacheKey: user.profileImageURL ?? '', scale: 1),
+                        ),
+                        wSpace3,
+                        Text(user.displayName ?? '',
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 20)),
+                      ],
+                    ),
+                  ),
                 ),
                 flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.parallax,
                     stretchModes: const [
                       StretchMode.zoomBackground,
-                      StretchMode.fadeTitle
                     ],
-                    title: const Text('Profile',
-                        style: TextStyle(color: Colors.black)),
                     background: Stack(fit: StackFit.expand, children: [
                       if (selectedFile != null)
                         Image.memory(selectedFile!, fit: BoxFit.cover)
                       else if (user.profileImageURL != null &&
                           user.profileImageURL!.isNotEmpty)
-                        Image.network(
-                          user.profileImageURL ?? '',
+                        CachedNetworkImage(
+                          imageUrl: user.profileImageURL ?? '',
                           fit: BoxFit.cover,
                         )
                       else
@@ -103,6 +119,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       )
                     ])),
                 expandedHeight: 400,
+                onStretchTrigger: () {
+                  return Future.delayed(
+                    Duration.zero,
+                  );
+                },
               ),
               SliverToBoxAdapter(
                 child: Container(
@@ -138,7 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       hSpace1,
                       TextFormField(
-                        initialValue: user.userName ?? '',
+                        initialValue: user.userName,
                         style: const TextStyle(
                           color: Colors.white,
                         ),
